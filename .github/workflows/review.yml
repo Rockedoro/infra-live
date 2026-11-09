@@ -1,0 +1,22 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: self-hosted # Используем ваш локальный раннер
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Нужно для git diff между ветками
+
+      - name: Run AI Review Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OLLAMA_HOST: http://localhost:11434 # Адрес вашего Docker-контейнера
+        run: |
+          chmod +x .github/scripts/review.sh
+          bash .github/scripts/review.sh
