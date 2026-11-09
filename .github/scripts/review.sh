@@ -21,30 +21,27 @@ if [ -z "$DIFF" ]; then
   exit 0
 fi
 
-# --- 2. Формируем промпт ---
-PROMPT="Ты — старший DevOps-инженер. Проанализируй этот diff. Найди ошибки безопасности, проблемы с производительностью Docker/Python/Bash и нарушения best practices. Ответь кратко, по пунктам.
-
-Diff:
-\`\`\`diff
-$DIFF
-\`\`\`"
+# --- 2. Формируем промпт безопасно через jq ---
+PROMPT=$(jq -n --arg diff "$DIFF" \
+  'Ты — старший DevOps-инженер. Проанализируй этот diff. Найди ошибки безопасности, проблемы с производительностью Docker/Python/Bash и нарушения best practices. Ответь кратко, по пунктам.\n\nDiff:\n```diff\n\($diff)\n```')
 
 # --- 3. Отправляем в Ollama ---
 RESPONSE=$(curl -s -X POST ${OLLAMA_HOST}/api/generate \
   -H "Content-Type: application/json" \
-  -d "{
-    \"model\": \"$MODEL\",
-    \"prompt\": \"$PROMPT\",
-    \"stream\": false
-  }" | jq -r '.response')
+  -d "$(jq -n --arg model "$MODEL" --arg prompt "$PROMPT" \
+    '{model: $model, prompt: $prompt, stream: false}')" | jq -r '.response')
 
-# --- 4. Публикуем комментарий в PR ---
-COMMENT_BODY="{\"body\": \"🤖 **AI Review**:\\n\\n$RESPONSE\"}"
+# --- 4. Публикуем комментарий в PR (безопасно через jq) ---
+if [ -z "$RESPONSE" ] || [ "$RESPONSE" = "null" ]; then
+  RESPONSE="⚠️ Модель не вернула ответ. Проверьте логи Ollama."
+fi
+
+COMMENT_JSON=$(jq -n --arg body "🤖 **AI Review**:\n\n$RESPONSE" '{body: $body}')
 
 curl -s -X POST \
   -H "Authorization: token $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/$REPO_FULL_NAME/issues/$PR_NUMBER/comments \
-  -d "$COMMENT_BODY"
+  "https://api.github.com/repos/$REPO_FULL_NAME/issues/$PR_NUMBER/comments" \
+  -d "$COMMENT_JSON"
 
 echo "✅ Review posted to PR #$PR_NUMBER"
