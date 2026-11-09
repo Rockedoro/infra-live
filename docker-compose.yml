@@ -27,14 +27,14 @@ services:
     image: myoung34/github-runner:latest
     container_name: github-runner
     env_file:
-      - .env # Загружаем переменные отсюда
+      - .env
     environment:
       RUNNER_NAME: local-devops-runner
       RUNNER_WORKDIR: /tmp/actions-runner
       LABELS: linux,x64,self-hosted
-      GH_PAT: ${GH_PAT}
-      ACCESS_TOKEN: ${GH_PAT} # Используем переменную из .env
-      REPO_URL: ${REPO_URL}   # Используем переменную из .env
+      ACCESS_TOKEN: ${GH_PAT}
+      REPO_URL: ${REPO_URL}
+      RUNNER_GH_PAT: ${GH_PAT} # <--- Эта переменная станет доступна в джобе
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - runner_data:/tmp/actions-runner
