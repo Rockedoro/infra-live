@@ -23,13 +23,18 @@ fi
 
 # --- 2. Формируем промпт безопасно через jq ---
 PROMPT=$(jq -n --arg diff "$DIFF" \
-  'Ты — старший DevOps-инженер. Проанализируй этот diff. Найди ошибки безопасности, проблемы с производительностью Docker/Python/Bash и нарушения best practices. Ответь кратко, по пунктам.\n\nDiff:\n```diff\n\($diff)\n```')
+  '"Ты — старший DevOps-инженер. Проанализируй этот diff. Найди ошибки безопасности, проблемы с производительностью Docker/Python/Bash и нарушения best practices. Ответь кратко, по пунктам.\n\nDiff:\n```diff\n\($diff)\n```"')
+
+# Убираем внешние кавычки, которые добавляет jq
+PROMPT=$(echo "$PROMPT" | sed 's/^"//;s/"$//')
 
 # --- 3. Отправляем в Ollama ---
+REQUEST_JSON=$(jq -n --arg model "$MODEL" --arg prompt "$PROMPT" \
+  '{model: $model, prompt: $prompt, stream: false}')
+
 RESPONSE=$(curl -s -X POST ${OLLAMA_HOST}/api/generate \
   -H "Content-Type: application/json" \
-  -d "$(jq -n --arg model "$MODEL" --arg prompt "$PROMPT" \
-    '{model: $model, prompt: $prompt, stream: false}')" | jq -r '.response')
+  -d "$REQUEST_JSON" | jq -r '.response')
 
 # --- 4. Публикуем комментарий в PR (безопасно через jq) ---
 if [ -z "$RESPONSE" ] || [ "$RESPONSE" = "null" ]; then
