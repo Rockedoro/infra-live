@@ -15,8 +15,8 @@ jobs:
 
       - name: Run AI Review Script
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OLLAMA_HOST: http://localhost:11434 # Адрес вашего Docker-контейнера
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }} # Используем наш PAT вместо стандартного токена
+          OLLAMA_HOST: http://localhost:11434
         run: |
           chmod +x .github/scripts/review.sh
           bash .github/scripts/review.sh
