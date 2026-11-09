@@ -32,7 +32,7 @@ services:
       RUNNER_NAME: local-devops-runner
       RUNNER_WORKDIR: /tmp/actions-runner
       LABELS: linux,x64,self-hosted
-      ACCESS_TOKEN: ${GH_PAT} # Используем переменную из .env
+      GITHUB_TOKEN: ${GH_PAT} # Используем переменную из .env
       REPO_URL: ${REPO_URL}   # Используем переменную из .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
