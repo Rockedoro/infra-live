@@ -20,3 +20,10 @@ jobs:
         run: |
           chmod +x .github/scripts/review.sh
           bash .github/scripts/review.sh
+
+      - name: Debug Token
+        run: |
+          echo "Token length: ${#GITHUB_TOKEN}"
+          echo "Token starts with: ${GITHUB_TOKEN:0:5}..."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
