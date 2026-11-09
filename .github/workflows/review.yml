@@ -15,7 +15,7 @@ jobs:
 
       - name: Run AI Review Script
         env:
-          GITHUB_TOKEN: ${{ secrets.RUNNER_GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           OLLAMA_HOST: http://ollama:11434
         run: |
           chmod +x .github/scripts/review.sh

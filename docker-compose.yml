@@ -34,7 +34,6 @@ services:
       LABELS: linux,x64,self-hosted
       ACCESS_TOKEN: ${GH_PAT}
       REPO_URL: ${REPO_URL}
-      RUNNER_GH_PAT: ${GH_PAT} # <--- ДОБАВЬТЕ ЭТУ СТРОКУ
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - runner_data:/tmp/actions-runner
