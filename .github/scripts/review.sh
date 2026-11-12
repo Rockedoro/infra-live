@@ -3,7 +3,7 @@ set -e
 
 # --- Конфигурация ---
 MAX_DIFF_LINES=500
-MODEL="qwen2.5-coder:7b"
+MODEL="qwen2.5-coder:1.5b"
 PR_NUMBER=$(jq -r '.pull_request.number' "$GITHUB_EVENT_PATH")
 REPO_FULL_NAME=$(jq -r '.repository.full_name' "$GITHUB_EVENT_PATH")
 

@@ -20,7 +20,7 @@ services:
         condition: service_healthy
     environment:
       - OLLAMA_HOST=http://ollama:11434
-    entrypoint: ["/bin/sh", "-c", "ollama pull qwen2.5-coder:7b && echo 'Model ready'"]
+    entrypoint: ["/bin/sh", "-c", "ollama pull qwen2.5-coder:1.5b && echo 'Model ready'"]
     restart: "no"
 
   github-runner:
