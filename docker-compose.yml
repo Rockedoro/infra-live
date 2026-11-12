@@ -20,20 +20,20 @@ services:
         condition: service_healthy
     environment:
       - OLLAMA_HOST=http://ollama:11434
-    entrypoint: ["/bin/sh", "-c", "ollama pull qwen2.5-coder:7b && echo 'Model ready'"]
+    entrypoint: ["/bin/sh", "-c", "ollama pull qwen2.5-coder:1.5b && echo 'Model ready'"]
     restart: "no"
 
   github-runner:
     image: myoung34/github-runner:latest
     container_name: github-runner
     env_file:
-      - .env # Загружаем переменные отсюда
+      - .env
     environment:
       RUNNER_NAME: local-devops-runner
       RUNNER_WORKDIR: /tmp/actions-runner
       LABELS: linux,x64,self-hosted
-      ACCESS_TOKEN: ${GH_PAT} # Используем переменную из .env
-      REPO_URL: ${REPO_URL}   # Используем переменную из .env
+      ACCESS_TOKEN: ${GH_PAT}
+      REPO_URL: ${REPO_URL}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - runner_data:/tmp/actions-runner
